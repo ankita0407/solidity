@@ -1263,7 +1263,30 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 				// as require with custom errors is not supported in legacy codegen.
 				auto const* magicType = dynamic_cast<MagicType const*>(arguments[1]->annotation().type);
 				if (magicType && magicType->kind() == MagicType::Kind::Error)
-					solUnimplemented("Require with a custom error is only available using the via-ir pipeline.");
+				{
+					m_context << Instruction::ISZERO << Instruction::ISZERO;
+					auto success = m_context.appendConditionalJump();
+
+					auto const& errorConstructorCall = dynamic_cast<FunctionCall const&>(*arguments[1]);
+					errorConstructorCall.expression().accept(*this);
+					std::vector<Type const*> argumentTypes;
+					for (ASTPointer<Expression const> const& arg: errorConstructorCall.sortedArguments())
+					{
+						arg->accept(*this);
+						argumentTypes.push_back(arg->annotation().type);
+					}
+
+					auto const* errorDefinition = dynamic_cast<ErrorDefinition const*>(ASTNode::referencedDeclaration(errorConstructorCall.expression()));
+					solAssert(errorDefinition);
+
+					utils().revertWithError(
+						errorDefinition->functionType(true)->externalSignature(),
+						errorDefinition->functionType(true)->parameterTypes(),
+						argumentTypes
+					);
+					m_context << success;
+					break;
+				}
 
 				if (m_context.revertStrings() == RevertStrings::Strip)
 				{
