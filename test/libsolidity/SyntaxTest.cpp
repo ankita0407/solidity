@@ -93,7 +93,7 @@ void SyntaxTest::parseAndAnalyze()
 			return Error::isError(error->type());
 		});
 		// failing compilation after successful analysis is a rare case,
-		// it assumes that errors contain exactly one error, and the error is either of type Error::Type::CodeGenerationError or Error::Type::UnimplementedFeatureError 
+		// it assumes that errors contain exactly one error, and the error is either of type Error::Type::CodeGenerationError or Error::Type::UnimplementedFeatureError
 		if (allowedErrorCount != 1 || errorCount != 1)
 			BOOST_THROW_EXCEPTION(std::runtime_error("Compilation failed even though analysis was successful."));
 	}
