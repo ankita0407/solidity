@@ -709,11 +709,7 @@ bool CompilerStack::parseAndAnalyze(State _stopAfter)
 		m_errorReporter.unimplementedFeatureError(
 			7053_error,
 			errorSourceLocation,
-			fmt::format(
-				"Unimplemented feature error {} in {}",
-				(comment && !comment->empty()) ? ": " + *comment : "",
-				_unimplementedError.lineInfo()
-			)
+			(comment && !comment->empty()) ? *comment : ""
 		);
 		return false;
 	}
@@ -798,11 +794,7 @@ bool CompilerStack::compile(State _stopAfter)
 						m_errorReporter.unimplementedFeatureError(
 							1834_error,
 							errorSourceLocation,
-							fmt::format(
-								"Unimplemented feature error {} in {}",
-								(comment && !comment->empty()) ? ": " + *comment : "",
-								_unimplementedError.lineInfo()
-							)
+							(comment && !comment->empty()) ? *comment : ""
 						);
 						return false;
 					}
